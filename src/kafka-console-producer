@@ -119,7 +119,7 @@ _landoop-kafka-console-producer() {
             _known_hosts
             return 0
             ;;
-	--producer-property)
+        --producer-property)
             _landoop-producer-configs
             return 0
             ;;
@@ -127,15 +127,15 @@ _landoop-kafka-console-producer() {
             _landoop-producer-compression-configs
             return 0
             ;;
-	@(${wfileargs// /|}))
+        @(${wfileargs// /|}))
             _filedir
             return 0
             ;;
-	# @(${wdirargs// /|}))
+        # @(${wdirargs// /|}))
         #     _filedir -d
         #     return 0
         #     ;;
-	@(${wotherarg// /|}))
+        @(${wotherarg// /|}))
             return 0
             ;;
     esac

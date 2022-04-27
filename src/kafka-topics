@@ -111,11 +111,11 @@ _landoop-kafka-topics() {
     allopts="$wotherarg $opts"
 
     case "$prev" in
-	--config)
+        --config)
             _landoop-kafka-topics-configs
             return 0
             ;;
-	--delete-config)
+        --delete-config)
             _landoop-kafka-topics-delete-configs
             return 0
             ;;

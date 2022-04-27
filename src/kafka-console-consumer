@@ -9,10 +9,10 @@ _landoop-consumer-configs()
     configs="bootstrap.servers= \
              key.deserializer= \
              value.deserializer= \
-	     fetch.min.bytes= \
-	     group.id= \
-	     heartbeat.interval.ms= \
-	     max.partition.fetch.bytes= \
+             fetch.min.bytes= \
+             group.id= \
+             heartbeat.interval.ms= \
+             max.partition.fetch.bytes= \
              session.timeout.ms= \
              ssl.key.password= \
              ssl.keystore.location= \
@@ -117,7 +117,7 @@ _landoop-kafka-console-consumer() {
             _known_hosts
             return 0
             ;;
-	--consumer-property)
+        --consumer-property)
             _landoop-consumer-configs
             return 0
             ;;
@@ -125,15 +125,15 @@ _landoop-kafka-console-consumer() {
             _landoop-consumer-isolation-configs
             return 0
             ;;
-	@(${wfileargs// /|}))
+        @(${wfileargs// /|}))
             _filedir
             return 0
             ;;
-	@(${wdirargs// /|}))
+        @(${wdirargs// /|}))
             _filedir -d
             return 0
             ;;
-	@(${wotherarg// /|}))
+        @(${wotherarg// /|}))
             return 0
             ;;
     esac
