@@ -116,7 +116,7 @@ _landoop-kafka-console-producer() {
 
     case "$prev" in
         --broker-list)
-            _known_hosts
+            _known_hosts "broker-list"
             return 0
             ;;
         --producer-property)

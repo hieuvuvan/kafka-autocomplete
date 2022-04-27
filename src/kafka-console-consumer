@@ -113,8 +113,12 @@ _landoop-kafka-console-consumer() {
     allopts="$wotherarg $opts $wfileargs $wdirargs"
 
     case "$prev" in
-        --bootstrap-server|--zookeeper)
-            _known_hosts
+        --zookeeper)
+            _known_hosts "zookeeper"
+            return 0
+            ;;
+        --bootstrap-server)
+            _known_hosts "bootstrap-server"
             return 0
             ;;
         --consumer-property)

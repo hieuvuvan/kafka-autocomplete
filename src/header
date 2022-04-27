@@ -16,3 +16,23 @@
 # limitations under the License.
 
 shopt -s extglob
+
+_known_hosts()
+{
+    COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
+    local cur hosts pattern
+    case "$1" in
+        zookeeper)
+            pattern='(?<=zookeeper(\s|=)).*?(?=--|$)'
+            ;;
+        broker-list|bootstrap-server)
+            pattern='(?<=bootstrap-server(\s|=)|broker-list(\s|=)).*?(?=--|$)'
+            ;;
+        *)
+            pattern='(?<=zookeeper(\s|=)|bootstrap-server(\s|=)|broker-list(\s|=)).*?(?=--|$)'
+            ;;
+    esac
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    hosts=$(fc -l -1000|cut -d' ' -f 2-|grep '^kafka'|grep -oP "$pattern")
+    COMPREPLY=( $(compgen -W "${hosts}" -- "${cur}") )
+}

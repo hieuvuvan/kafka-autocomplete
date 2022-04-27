@@ -132,7 +132,7 @@ _landoop-kafka-topics() {
             return 0
             ;;
         --zookeeper)
-            _known_hosts
+            _known_hosts "zookeeper"
             return 0
             ;;
         @(${wotherarg// /|}))

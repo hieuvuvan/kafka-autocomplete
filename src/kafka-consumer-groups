@@ -116,6 +116,10 @@ _landoop-kafka-consumer-groups() {
             done
             return 0
             ;;
+        --bootstrap-server)
+            _known_hosts "bootstrap-server"
+            return 0
+            ;;
         @(${wotherarg// /|}))
             return 0
             ;;
