@@ -1,0 +1,148 @@
+# bash completion for kafka-consumer-groups         -*- shell-script -*-
+
+_landoop-groups-describe-configs()
+{
+    local cur prev configs
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    configs="--state \
+             --members \
+             --offsets"
+
+    COMPREPLY=( $(compgen -W "${configs}" -- ${cur}) )
+    return 0
+}
+
+_landoop-groups-delete-configs()
+{
+    local cur prev configs
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    configs="--topic"
+
+    COMPREPLY=( $(compgen -W "${configs}" -- ${cur}) )
+    return 0
+}
+
+_landoop-groups-reset-offsets-configs()
+{
+    local cur prev configs
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    configs="--to-current \
+             --to-earliest \
+             --to-latest \
+             --to-offset \
+             --to-datetime \
+             --shift-by \
+             --by-duration \
+             --topic \
+             --execute \
+             --all-topics \
+             --dry-run"
+
+    COMPREPLY=( $(compgen -W "${configs}" -- ${cur}) )
+    return 0
+}
+
+_landoop-groups-list-groups ()
+{
+    local groups cur prev
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    groups="$(kafka-consumer-groups --bootstrap-server ${1} --list 2>/dev/null)"
+    COMPREPLY=( $(compgen -W "${groups}" -- ${cur}) )
+    return 0
+}
+
+_landoop-groups-list-topic-for-group ()
+{
+    local topics cur prev
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    topics="$(kafka-consumer-groups --bootstrap-server ${1} --group ${2} --describe 2>&1|tail -n +4|awk '{print $1}'|sort|uniq)"
+    COMPREPLY=( $(compgen -W "${topics}" -- ${cur}) )
+    return 0
+}
+
+_landoop-kafka-consumer-groups() {
+    local cur prev opts wotherarg allopts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    wotherarg="--bootstrap-server \
+               --group \
+               --timeout \
+               --verbose"
+    opts="--list \
+          --describe \
+          --delete \
+          --reset-offsets"
+
+    allopts="$wotherarg $opts"
+
+    case "$prev" in
+        --group)
+            for i in "${!COMP_WORDS[@]}"; do
+                if [[ "${COMP_WORDS[$i]}" == "--bootstrap-server" ]]; then
+                    server="${COMP_WORDS[$i+1]}"
+                    if [[ "${COMP_WORDS[$i+2]}" == : ]]; then
+                        server="${server}${COMP_WORDS[$i+2]}${COMP_WORDS[$i+3]}"
+                    fi
+                    _landoop-groups-list-groups $server
+                fi
+            done
+            return 0
+            ;;
+        --topic)
+            for i in "${!COMP_WORDS[@]}"; do
+                if [[ "${COMP_WORDS[$i]}" == "--bootstrap-server" ]]; then
+                    server="${COMP_WORDS[$i+1]}"
+                    if [[ "${COMP_WORDS[$i+2]}" == : ]]; then
+                        server="${server}${COMP_WORDS[$i+2]}${COMP_WORDS[$i+3]}"
+                    fi
+                    for j in "${!COMP_WORDS[@]}"; do
+                        if [[ "${COMP_WORDS[$j]}" == "--group" ]]; then
+                            group="${COMP_WORDS[$j+1]}"
+                            _landoop-groups-list-topic-for-group $server $group
+                        fi
+                    done
+                fi
+            done
+            return 0
+            ;;
+        @(${wotherarg// /|}))
+            return 0
+            ;;
+    esac
+
+    if [[ ${cur} == -* ]] ; then
+        for i in "${!COMP_WORDS[@]}"; do
+            if [[ "${COMP_WORDS[$i]}" == "--describe" ]]; then
+                _landoop-groups-describe-configs
+                COMPREPLY=( $(compgen -W "${COMPREPLY[*]} ${wotherarg}" -- ${cur}) )
+                return 0
+            fi
+            if [[ "${COMP_WORDS[$i]}" == "--delete" ]]; then
+                _landoop-groups-delete-configs
+                COMPREPLY=( $(compgen -W "${COMPREPLY[*]} ${wotherarg}" -- ${cur}) )
+                return 0
+            fi
+            if [[ "${COMP_WORDS[$i]}" == "--reset-offsets" ]]; then
+                _landoop-groups-reset-offsets-configs
+                COMPREPLY=( $(compgen -W "${COMPREPLY[*]} ${wotherarg}" -- ${cur}) )
+                return 0
+            fi
+        done
+        COMPREPLY=( $(compgen -W "${allopts}" -- ${cur}) )
+        return 0
+    fi
+}
+
+complete -F _landoop-kafka-consumer-groups kafka-consumer-groups
+complete -F _landoop-kafka-consumer-groups kafka-consumer-groups.sh

@@ -20,6 +20,7 @@ Currently completion is provided for five utilities:
 - kafka-console-producer / kafka-avro-console-producer
 - kafka-mirrormaker
 - kafka-acls
+- kafka-consumer-groups
 
 We provide completion for options, kafka configs and kafka properties.
 Especially for `kafka-topics` if you set the `--zookeeper` switch, we try to
